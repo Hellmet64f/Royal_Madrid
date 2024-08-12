@@ -119,7 +119,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Verifica se o usuário está salvo e loga automaticamente
-            const savedUser = localStorage.getItem('savedUser');
+            const savedUser = getCookie('savedUser');
             if (savedUser) {
                 window.location.href = 'https://hellmet64f.github.io/Hellmet-/'; // Redireciona para a página principal
             }
@@ -151,6 +151,31 @@
             return atob(data);
         }
 
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            document.cookie = name + '=; Max-Age=-99999999;';
+        }
+
         function login() {
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
@@ -163,7 +188,7 @@
             const users = JSON.parse(localStorage.getItem('users')) || {};
             if (users[encodedUsername] && users[encodedUsername] === encodedPassword) {
                 if (rememberMe) {
-                    localStorage.setItem('savedUser', encodedUsername);
+                    setCookie('savedUser', encodedUsername, 365 * 10); // Salva o cookie por 10 anos
                 } else {
                     sessionStorage.setItem('savedUser', encodedUsername);
                 }
