@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Criação de Conta - Hellmet Sensi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.imgur.com/Da6Zgr2.jpeg'); /* Imagem de fundo */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+        }
+        .container {
+            background: linear-gradient(to bottom right, rgba(128, 0, 128, 0.8), rgba(0, 0, 128, 0.8)); /* Degradê roxo */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            width: 320px;
+            text-align: center;
+        }
+        .container h2 {
+            margin-bottom: 20px;
+            color: #fff; /* Cor branca para o título */
+        }
+        .container input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #000;
+        }
+        .container button {
+            background-color: #6a1b9a; /* Roxo escuro */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .container button:hover {
+            background-color: #4a148c; /* Roxo mais escuro */
+        }
+        .container a {
+            display: block;
+            margin-top: 10px;
+            color: #fff; /* Cor branca */
+            text-decoration: none;
+        }
+        .container a:hover {
+            text-decoration: underline;
+        }
+        .error-message, .success-message {
+            color: #ffeb3b; /* Cor amarela para mensagens */
+            margin: 10px 0;
+        }
+        .success-message {
+            color: #00e676; /* Cor verde para sucesso */
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .remember-me input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-section" class="form-section active">
+            <h2>Login - Hellmet Sensi</h2>
+            <div class="error-message" id="login-error-message"></div>
+            <input type="text" id="login-username" placeholder="Usuário" required>
+            <input type="password" id="login-password" placeholder="Senha" required>
+            <div class="remember-me">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">Lembrar-me</label>
+            </div>
+            <button onclick="login()">Entrar</button>
+            <a href="javascript:void(0)" onclick="showRegister()">Criar Conta</a>
+            <a href="javascript:void(0)" onclick="showRecover()">Recuperar Conta</a>
+        </div>
+        
+        <div id="register-section" class="form-section">
+            <h2>Criar Conta - Hellmet Sensi</h2>
+            <div class="success-message" id="register-success-message"></div>
+            <input type="text" id="register-username" placeholder="Novo Usuário" required>
+            <input type="password" id="register-password" placeholder="Nova Senha" required>
+            <button onclick="register()">Criar Conta</button>
+            <a href="javascript:void(0)" onclick="showLogin()">Voltar para Login</a>
+        </div>
+        
+        <div id="recover-section" class="form-section">
+            <h2>Recuperar Conta - Hellmet Sensi</h2>
+            <div class="success-message" id="recover-success-message"></div>
+            <input type="text" id="recover-username" placeholder="Usuário" required>
+            <button onclick="recoverPassword()">Recuperar Senha</button>
+            <a href="javascript:void(0)" onclick="showLogin()">Voltar para Login</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verifica se o usuário está salvo e loga automaticamente
+            const savedUser = localStorage.getItem('savedUser');
+            if (savedUser) {
+                window.location.href = 'https://hellmet64f.github.io/Hellmet-/'; // Redireciona para a página principal
+            }
+        });
+
+        function showRegister() {
+            document.getElementById('login-section').classList.remove('active');
+            document.getElementById('recover-section').classList.remove('active');
+            document.getElementById('register-section').classList.add('active');
+        }
+
+        function showLogin() {
+            document.getElementById('register-section').classList.remove('active');
+            document.getElementById('recover-section').classList.remove('active');
+            document.getElementById('login-section').classList.add('active');
+        }
+
+        function showRecover() {
+            document.getElementById('login-section').classList.remove('active');
+            document.getElementById('register-section').classList.remove('active');
+            document.getElementById('recover-section').classList.add('active');
+        }
+
+        function encodeBase64(data) {
+            return btoa(data);
+        }
+
+        function decodeBase64(data) {
+            return atob(data);
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            const errorMessage = document.getElementById('login-error-message');
+
+            const encodedUsername = encodeBase64(username);
+            const encodedPassword = encodeBase64(password);
+
+            const users = JSON.parse(localStorage.getItem('users')) || {};
+            if (users[encodedUsername] && users[encodedUsername] === encodedPassword) {
+                if (rememberMe) {
+                    localStorage.setItem('savedUser', encodedUsername);
+                } else {
+                    sessionStorage.setItem('savedUser', encodedUsername);
+                }
+                window.location.href = 'https://hellmet64f.github.io/Hellmet-/'; // Redireciona para o site desejado
+            } else {
+                errorMessage.textContent = 'Usuário ou senha incorretos.';
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const successMessage = document.getElementById('register-success-message');
+
+            if (username && password) {
+                const encodedUsername = encodeBase64(username);
+                const encodedPassword = encodeBase64(password);
+
+                const users = JSON.parse(localStorage.getItem('users')) || {};
+                if (users[encodedUsername]) {
+                    successMessage.textContent = 'Usuário já existe. Escolha um nome de usuário diferente.';
+                } else {
+                    users[encodedUsername] = encodedPassword;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    successMessage.textContent = 'Conta criada com sucesso! Você pode fazer login agora.';
+                    setTimeout(() => {
+                        showLogin();
+                    }, 2000);
+                }
+            } else {
+                successMessage.textContent = 'Por favor, preencha todos os campos.';
+            }
+        }
+
+        function recoverPassword() {
+            const username = document.getElementById('recover-username').value;
+            const successMessage = document.getElementById('recover-success-message');
+
+            const encodedUsername = encodeBase64(username);
+            const users = JSON.parse(localStorage.getItem('users')) || {};
+            if (users[encodedUsername]) {
+                const decodedPassword = decodeBase64(users[encodedUsername]);
+                successMessage.textContent = `Sua senha é: ${decodedPassword}`;
+                setTimeout(() => {
+                    showLogin();
+                }, 3000); // Volta para a tela de login após 3 segundos
+            } else {
+                successMessage.textContent = 'Usuário não encontrado.';
+            }
+        }
+    </script>
+</body>
+</html>
