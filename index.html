@@ -2,9 +2,171 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contrato de Jogador - Royal Madrid</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #f5f5dc; /* cor de papel antigo */
+      font-family: 'Georgia', serif;
+      padding: 40px;
+    }
+    .contrato {
+      background: #fffaf0;
+      border: 2px solid #d2b48c;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #5a4635;
+    }
+    label {
+      font-weight: bold;
+      color: #5a4635;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px;
+      border: 1px solid #c0a16b;
+      border-radius: 5px;
+      background: #fff;
+    }
+    button {
+      background-color: #5a4635;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #7b6147;
+    }
+    .assinatura {
+      margin-top: 40px;
+      text-align: center;
+      color: #5a4635;
+      font-style: italic;
+    }
+    /* Estilos para a animação do nome com caneta */
+    .nome-digitalizado {
+      font-size: 30px;
+      font-family: 'Courier New', Courier, monospace;
+      color: #5a4635;
+      white-space: nowrap;
+      border-right: 3px solid #5a4635;
+      display: inline-block;
+      padding-right: 10px;
+      overflow: hidden;
+      width: 0;
+      animation: none;
+    }
+
+    .caneta {
+      display: inline-block;
+      font-size: 25px;
+      margin-left: 10px;
+      opacity: 0;
+      animation: balancar 1s infinite, mostrarCaneta 1s forwards;
+    }
+
+    /* Efeito de digitação */
+    @keyframes digitar {
+      to {
+        width: 100%;
+      }
+    }
+
+    /* Efeito de movimento da caneta */
+    @keyframes balancar {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(15deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    /* Mostrar a caneta após o clique */
+    @keyframes mostrarCaneta {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Estilo do carimbo */
+    .carimbo {
+      display: block;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      background-color: #d2b48c;
+      color: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .carimbo a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .carimbo a:hover {
+      text-decoration: underline;
+    }
+
+    /* Estilo para a seção de regras */
+    .regras {
+      display: none;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #fff;
+      border: 2px solid #d2b48c;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      animation: aparecerRegras 0.5s ease-in-out;
+    }
+
+    .regras h3 {
+      text-align: center;
+      color: #5a4635;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .regras ul {
+      color: #5a4635;
+      font-size: 18px;
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+
+    .regras ul li {
+      margin: 10px 0;
+    }
+
+    .regras p {
+      font-size: 16px;
+      color: #5a4635;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .regras p strong {
+      color: #d2b48c;
+    }
+
+    /* Animação para aparecer as regras */
+    @keyframes aparecerRegras {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
@@ -38,18 +200,22 @@
     Contrato assinado! Bem-vindo à família Royal Madrid!
   </div>
 
+  <!-- Aqui está a animação do nome -->
   <div class="assinatura">
     <span id="nomeDigitalizado" class="nome-digitalizado"></span>
     <span id="caneta" class="caneta">🖊</span>
   </div>
 
+  <!-- Carimbo e link do Discord -->
   <div class="carimbo" style="display:none;" id="carimbo">
     Royal Madrid - Concluído! <br>
     <a href="https://discord.gg/KsAmXsStz5" target="_blank">Junte-se ao nosso Discord</a>
   </div>
 
+  <!-- Botão para ver as regras -->
   <button type="button" id="botaoRegras">Ver Regras</button>
 
+  <!-- Seção de Regras -->
   <div class="regras" id="regras">
     <h3>Requisitos para entrar na base do jogo:</h3>
     <ul>
@@ -64,7 +230,60 @@
 
 </div>
 
-<script src="script.js"></script>
+<script>
+  // Função para calcular a diferença de dias
+  function calcularDiasPassados(data1, data2) {
+    const diffTime = Math.abs(data2 - data1);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // diferença em dias
+  }
+
+  document.getElementById('contratoForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Verifica se o usuário já assinou o contrato recentemente
+    const ultimaAssinatura = localStorage.getItem('ultimaAssinatura');
+    const dataAtual = new Date();
+    
+    if (ultimaAssinatura) {
+      const ultimaData = new Date(ultimaAssinatura);
+      const diasPassados = calcularDiasPassados(ultimaData, dataAtual);
+
+      if (diasPassados < 60) {
+        alert(`Você só pode assinar o contrato uma vez a cada 60 dias. Faltam ${60 - diasPassados} dias para você poder assinar novamente.`);
+        return;
+      }
+    }
+
+    // Exibe a mensagem de contrato assinado
+    document.getElementById('mensagemFinal').style.display = 'block';
+
+    // Obtém o nome do jogador e inicia a animação
+    const nome = document.getElementById('nome').value;
+    document.getElementById('nomeDigitalizado').textContent = nome;
+    
+    // Inicia a animação de digitação
+    document.getElementById('nomeDigitalizado').style.animation = 'digitar 3s steps(30) 1s forwards';
+    
+    // Faz a caneta aparecer e animar
+    const caneta = document.getElementById('caneta');
+    caneta.style.animation = 'balancar 1s infinite, mostrarCaneta 1s forwards';
+    
+    // Exibe o carimbo com o link para o Discord
+    document.getElementById('carimbo').style.display = 'block';
+    
+    // Armazena a data da assinatura no localStorage
+    localStorage.setItem('ultimaAssinatura', dataAtual.toISOString());
+
+    // Limpa o formulário
+    document.getElementById('contratoForm').reset();
+  });
+
+  // Função para exibir as regras quando o botão for clicado
+  document.getElementById('botaoRegras').addEventListener('click', function() {
+    const regrasDiv = document.getElementById('regras');
+    regrasDiv.style.display = (regrasDiv.style.display === 'block') ? 'none' : 'block';
+  });
+</script>
 
 </body>
 </html>
